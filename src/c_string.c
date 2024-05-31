@@ -3,6 +3,8 @@
 #include <memory.h>
 #include <stdlib.h>
 #include <stdalign.h>
+#include <stdarg.h> // Needed for va_list (variable argument lists)
+#include <stdio.h> // Needed for vsnprintf
 
 String *new_string_malloc(const char *initial_str)
 {
@@ -129,6 +131,46 @@ void string_append_char_array_malloc(String *dest, const char *src) {
 
     // Add null terminator
     dest->data[dest->length] = '\0';
+}
+
+String* string_format(String *dest, Arena *arena, const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    // Calculate the size of the formatted string (with some buffer)
+    int size = vsnprintf(NULL, 0, format, args);
+    va_end(args);
+    if (size < 0) {
+        return NULL; // Error occurred
+    }
+
+    // Handle String allocation depending on whether we are in arena mode or not
+    String *result = dest;
+    if(result == NULL){
+        result = arena ? new_string_arena(NULL, arena) : new_string_malloc(NULL);
+        if(!result) return NULL;
+    }
+    
+    va_start(args, format);
+
+    result->data = arena ? arena_allocate(arena, size + 1, alignof(char)) : (char*)realloc(result->data, size + 1);
+    if (!result->data) {
+        // Handle allocation failure (potentially reset arena and return NULL if in arena mode)
+        va_end(args);
+        if(arena){ 
+            arena_reset(arena); 
+        }
+        else{
+            free(result);
+        }
+        return NULL; 
+    }
+
+    result->capacity = size + 1;
+    result->length = vsnprintf(result->data, result->capacity, format, args);
+
+    va_end(args);
+    return result;
 }
 
 void string_append_string_malloc(String *dest, const String *src)

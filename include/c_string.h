@@ -127,6 +127,11 @@ void string_append_string_arena(String *dest, const String *src, Arena *arena) {
 size_t string_length(String *string);
 
 /**
+ * @brief UNDER CONSTRUCTION, UNSTABLE!!!
+ */
+String *string_format(String *dest, Arena *arena, const char *format, ...);
+
+/**
  * @brief Frees the memory allocated for a `String` created with `new_string_malloc`.
  *
  * This function first frees the internal string data (`string->data`) and then frees 
