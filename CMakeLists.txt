@@ -8,7 +8,12 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 include_directories(include)
 
 # Add the subdirectory (your C library)
-add_subdirectory(libs/arena_allocator)
+# If the TARGET is included any other way for example by another library
+# in the same project than we will not include it twice.
+if(NOT TARGET ARENA_ALLOCATOR)
+    add_subdirectory(libs/arena_allocator)
+endif()
+
 target_include_directories(ARENA_ALLOCATOR INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/libs/arena_allocator/include)
 
 # Library source files
