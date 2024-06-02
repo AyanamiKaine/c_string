@@ -103,9 +103,7 @@ void string_append_string_malloc(String *dest, const String *src);
  * @param src The source `String` to append.
  * @param arena A pointer to the `Arena` if both strings are arena-allocated.
  */
-void string_append_string_arena(String *dest, const String *src, Arena *arena) {
-    string_append_char_array_arena(dest, src->data, arena);
-}
+void string_append_string_arena(String *dest, const String *src, Arena *arena);
 
 /**
  * @brief  Calculates the length of a `String`.
@@ -125,11 +123,6 @@ void string_append_string_arena(String *dest, const String *src, Arena *arena) {
  * 
  */
 size_t string_length(String *string);
-
-/**
- * @brief UNDER CONSTRUCTION, UNSTABLE!!!
- */
-String *string_format(String *dest, Arena *arena, const char *format, ...);
 
 /**
  * @brief Frees the memory allocated for a `String` created with `new_string_malloc`.
